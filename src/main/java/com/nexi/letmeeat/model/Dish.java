@@ -24,7 +24,11 @@ public class Dish {
 
     @Column
     @JsonProperty
-    private String image;
+    private String description;
+
+    @Column
+    @JsonProperty
+    private String imageUrl;
 
     @Column
     @JsonProperty
