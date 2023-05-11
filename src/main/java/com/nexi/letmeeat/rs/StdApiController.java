@@ -1,6 +1,10 @@
 package com.nexi.letmeeat.rs;
 
+import com.nexi.letmeeat.Resources.PostBookingRequest;
+import com.nexi.letmeeat.db.BookingRepository;
 import com.nexi.letmeeat.db.RestaurantRepository;
+import com.nexi.letmeeat.db.TableRepository;
+import com.nexi.letmeeat.db.UserRepository;
 import com.nexi.letmeeat.model.Booking;
 import com.nexi.letmeeat.model.Menu;
 import com.nexi.letmeeat.model.Order;
@@ -15,7 +19,14 @@ import java.util.List;
 @Controller
 public class StdApiController implements StdApi {
 
+    @Autowired
     private RestaurantRepository restaurantRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
+    @Autowired
+    private TableRepository tableRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     public StdApiController(RestaurantRepository restaurantRepository) {
@@ -28,8 +39,13 @@ public class StdApiController implements StdApi {
     }
 
     @Override
-    public ResponseEntity<Void> postBooking(Booking booking) throws Exception {
-        return null;
+    public ResponseEntity<Void> postBooking(PostBookingRequest postBookingRequest) throws Exception {
+        bookingRepository.save(Booking.builder()
+                .table(tableRepository.findById(postBookingRequest.getTableId()).orElse(null))
+                .user(userRepository.findById(postBookingRequest.getUserId()).orElse(null))
+                .build());
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override

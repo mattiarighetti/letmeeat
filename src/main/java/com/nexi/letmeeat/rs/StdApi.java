@@ -1,5 +1,6 @@
 package com.nexi.letmeeat.rs;
 
+import com.nexi.letmeeat.Resources.PostBookingRequest;
 import com.nexi.letmeeat.model.Booking;
 import com.nexi.letmeeat.model.Menu;
 import com.nexi.letmeeat.model.Order;
@@ -20,9 +21,9 @@ public interface StdApi {
             @RequestBody Order order)
             throws Exception;
 
-    @PostMapping(value = "/order", produces = {"application/json"})
+    @PostMapping(value = "/booking", produces = {"application/json"})
     ResponseEntity<Void> postBooking(
-            @RequestBody Booking booking)
+            @RequestBody PostBookingRequest postBookingRequest)
             throws Exception;
 
     @GetMapping(value = "/restaurant", produces = {"application/json"})
@@ -32,6 +33,5 @@ public interface StdApi {
     @GetMapping(value = "/restaurant/{restaurantId}/menu", produces = {"application/json"})
     ResponseEntity<List<Menu>> getRestaurantMenu(@PathVariable("restaurantId") String restaurantId)
             throws Exception;
-
 
 }
