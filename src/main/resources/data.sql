@@ -17,7 +17,7 @@ INSERT INTO MENUS (MENU_ID, NAME, RESTAURANT_ID) VALUES ('7', 'Long drinks', '5'
 
 --DISHES
 INSERT INTO DISHES (DISH_ID, NAME, DESCRIPTION, IMAGE_URL, PRICE, MENU_ID) VALUES ('1', 'Hamburger Vegano', 'Molto buono e consigliato.', 'https://www.my-personaltrainer.it/2020/09/07/hamburger_900x760.jpeg', 23.99, '1');
-INSERT INTO DISHES (DISH_ID, NAME, DESCRIPTION, IMAGE_URL, PRICE, MENU_ID) VALUES ('2', 'Hamburger Anoveg', 'Puzza un po ma è il formaggio.', 'https://s7d1.scene7.com/is/image/mcdonalds/DC_202006_0001_Hamburger_Alt_832x472:1-3-product-tile-desktop?wid=765&hei=472&dpr=off', 19.99, '1');
+INSERT INTO DISHES (DISH_ID, NAME, DESCRIPTION, IMAGE_URL, PRICE, MENU_ID) VALUES ('2', 'Hamburger Anoveg', 'Puzza un po ma c''est le fromage.', 'https://s7d1.scene7.com/is/image/mcdonalds/DC_202006_0001_Hamburger_Alt_832x472:1-3-product-tile-desktop?wid=765&hei=472&dpr=off', 19.99, '1');
 INSERT INTO DISHES (DISH_ID, NAME, DESCRIPTION, IMAGE_URL, PRICE, MENU_ID) VALUES ('3', 'Pasta con le eliche che girano', 'vroom vroom', 'https://www.budgetbytes.com/wp-content/uploads/2013/07/Creamy-Spinach-Tomato-Pasta-bowl-500x500.jpg', 12.74, '2');
 INSERT INTO DISHES (DISH_ID, NAME, DESCRIPTION, IMAGE_URL, PRICE, MENU_ID) VALUES ('4', 'Pasta con muzzarella', 'gnam gnam', 'https://www.thechunkychef.com/wp-content/uploads/2017/08/One-Pot-Chicken-Parmesan-Pasta-feat-500x450.jpg', 12.99, '2');
 INSERT INTO DISHES (DISH_ID, NAME, DESCRIPTION, IMAGE_URL, PRICE, MENU_ID) VALUES ('5', 'Pizza ca a pummarola ncopp', 'Aumm aumm magnamm', 'https://madensverden.dk/wp-content/uploads/2021/06/hjemmelavet-pizza-500x375.jpg', 11.90, '3');
