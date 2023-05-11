@@ -101,7 +101,7 @@ public class StdApiController implements StdApi {
 
     @Override
     public ResponseEntity<List<Tables>> getRestaurantTables(String restaurantId)  {
-        return ResponseEntity.ok(tableRepository.findTablesByRestaurant(restaurantId));
+        return ResponseEntity.ok(tableRepository.findTablesByRestaurantIdIs(restaurantId));
     }
 
     @Override

@@ -39,4 +39,8 @@ public class Dish {
     @JsonIgnore
     private Menu menu;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
 }
