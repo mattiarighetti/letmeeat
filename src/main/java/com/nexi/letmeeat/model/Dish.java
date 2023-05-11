@@ -32,7 +32,7 @@ public class Dish {
 
     @Column
     @JsonProperty
-    private String price;
+    private Double price;
 
     @ManyToOne
     @JoinColumn(name="menu_id", nullable=false)
