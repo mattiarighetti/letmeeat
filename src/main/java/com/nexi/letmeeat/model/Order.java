@@ -14,7 +14,6 @@ import javax.persistence.Table;
 @Data
 public class Order {
 
-
     @Id
     private Long id;
 
