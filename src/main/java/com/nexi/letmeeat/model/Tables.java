@@ -25,8 +25,8 @@ public class Tables {
     @JsonProperty
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "RESTAURANT_ID", nullable = false)
-    private Restaurant restaurant;
+    @JsonProperty
+    @Column(name = "restaurant_id")
+    private String restaurantId;
 
 }
