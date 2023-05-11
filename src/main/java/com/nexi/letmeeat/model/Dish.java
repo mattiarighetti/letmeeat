@@ -7,6 +7,7 @@ import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "dishes")
@@ -39,8 +40,7 @@ public class Dish {
     @JsonIgnore
     private Menu menu;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @ManyToMany
+    private List<Order> order;
 
 }
