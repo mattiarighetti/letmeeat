@@ -1,6 +1,7 @@
 package com.nexi.letmeeat.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
@@ -31,6 +32,7 @@ public class Dish {
 
     @ManyToOne
     @JoinColumn(name="menu_id", nullable=false)
+    @JsonIgnore
     private Menu menu;
 
 }
