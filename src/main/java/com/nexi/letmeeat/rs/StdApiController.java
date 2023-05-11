@@ -58,7 +58,7 @@ public class StdApiController implements StdApi {
 
 
         Optional<Seat> seat = seatRepository.findById(orderModel.getSeatId());
-        List<Dish> dishes = dishRepository.findDishesByDishIdIs(orderModel.getDishIds());
+        List<Dish> dishes = dishRepository.findDishesByDishIdIn(orderModel.getDishIds());
 
         if (!seat.isPresent() || dishes.isEmpty())
             return ResponseEntity.badRequest().build();
@@ -101,7 +101,7 @@ public class StdApiController implements StdApi {
 
     @Override
     public ResponseEntity<List<Tables>> getRestaurantTables(String restaurantId)  {
-        return ResponseEntity.ok(tableRepository.findTablesByRestaurant(restaurantId));
+        return ResponseEntity.ok(tableRepository.findTablesByRestaurantId(restaurantId));
     }
 
     @Override
