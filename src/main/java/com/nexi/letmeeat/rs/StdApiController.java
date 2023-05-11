@@ -55,7 +55,7 @@ public class StdApiController implements StdApi {
         orderRepository.save(order);
 
 
-        PaymentRedirectResponse paymentRedirectResponse = null;
+        PaymentRedirectResponse paymentRedirectResponse;
         try {
             paymentRedirectResponse = PaymentRedirectResponse.builder().
                     paymentUrl(buildPaymentUrl(order)).build();
