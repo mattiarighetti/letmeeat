@@ -21,9 +21,11 @@ public class Restaurant {
     private Long restaurantId;
 
     @Column
+    @JsonProperty
     private String name;
 
     @Column
+    @JsonProperty
     private String category;
 
 }

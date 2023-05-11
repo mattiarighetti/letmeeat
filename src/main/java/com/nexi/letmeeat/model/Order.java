@@ -9,13 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 @DynamicUpdate
 @Data
 public class Order {
 
+
     @Id
     private Long id;
-
 
 }
