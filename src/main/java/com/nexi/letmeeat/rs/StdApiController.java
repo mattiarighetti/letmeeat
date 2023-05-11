@@ -5,6 +5,7 @@ import com.nexi.letmeeat.model.*;
 import com.nexi.letmeeat.resoruces.OrderModel;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import com.nexi.letmeeat.resoruces.PostBookingRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
+@Slf4j
 public class StdApiController implements StdApi {
 
     @Autowired
@@ -84,6 +86,8 @@ public class StdApiController implements StdApi {
 
     @Override
     public ResponseEntity<Menu> getRestaurantMenu(String restaurantId)  {
+        Menu menu = menuRepository.findMenuByRestaurantId(restaurantId);
+        log.debug("Menu {}", menu);
         return ResponseEntity.ok(menuRepository.findMenuByRestaurantId(restaurantId));
     }
 

@@ -1,10 +1,7 @@
 package com.nexi.letmeeat.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -14,11 +11,7 @@ import java.util.List;
 @Table(name = "menus")
 @DynamicUpdate
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class Menu {
-
 
     @Id
     @Column(name = "menu_id")
