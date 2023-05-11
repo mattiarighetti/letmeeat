@@ -10,6 +10,7 @@ import com.nexi.letmeeat.services.PayPalService;
 import com.nexi.letmeeat.utils.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -119,7 +120,9 @@ public class StdApiController implements StdApi {
 
         if(order != null) {
             emailService.sendEmail(order);
-            return new ResponseEntity<>(HttpStatus.OK);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Location", "https://letmeeat2.osc-fr1.scalingo.io/close");
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
         }
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
