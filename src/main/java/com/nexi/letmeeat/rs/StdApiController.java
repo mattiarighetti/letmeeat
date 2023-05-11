@@ -58,7 +58,7 @@ public class StdApiController implements StdApi {
 
 
         Optional<Seat> seat = seatRepository.findById(orderModel.getSeatId());
-        List<Dish> dishes = dishRepository.findDishesByDishIdIs(orderModel.getDishIds());
+        List<Dish> dishes = dishRepository.findDishesByDishIdIn(orderModel.getDishIds());
 
         if (!seat.isPresent() || dishes.isEmpty())
             return ResponseEntity.badRequest().build();
