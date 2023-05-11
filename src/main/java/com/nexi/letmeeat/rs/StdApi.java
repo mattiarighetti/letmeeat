@@ -1,10 +1,10 @@
 package com.nexi.letmeeat.rs;
 
-import com.nexi.letmeeat.Resources.PostBookingRequest;
-import com.nexi.letmeeat.model.Booking;
+import com.nexi.letmeeat.resoruces.PostBookingRequest;
 import com.nexi.letmeeat.model.Menu;
-import com.nexi.letmeeat.model.Order;
 import com.nexi.letmeeat.model.Restaurant;
+import com.nexi.letmeeat.resoruces.OrderModel;
+import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +17,8 @@ import java.util.List;
 public interface StdApi {
 
     @PostMapping(value = "/order", consumes = {"application/json"})
-    ResponseEntity<Void> postOrder(
-            @RequestBody Order order)
+    ResponseEntity<PaymentRedirectResponse> postOrder(
+            @RequestBody OrderModel order)
             throws Exception;
 
     @PostMapping(value = "/booking", produces = {"application/json"})

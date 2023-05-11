@@ -27,4 +27,9 @@ public class Restaurant {
     private String category;
 
 
+    @Column
+    @JsonProperty
+    private String imageUrl;
+
+
 }

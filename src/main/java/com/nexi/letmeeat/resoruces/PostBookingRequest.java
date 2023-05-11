@@ -1,4 +1,4 @@
-package com.nexi.letmeeat.Resources;
+package com.nexi.letmeeat.resoruces;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
