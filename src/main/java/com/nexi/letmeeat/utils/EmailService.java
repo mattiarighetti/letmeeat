@@ -2,55 +2,72 @@ package com.nexi.letmeeat.utils;
 
 import com.nexi.letmeeat.model.Dish;
 import com.nexi.letmeeat.model.Order;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMailMessage;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import javax.mail.internet.MimeMessage;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class EmailService {
 
     @Autowired
     private JavaMailSender emailSender;
 
     public void sendSimpleMessage(
-      String to, String subject, String text) {
+            String to, String subject, String text) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@letmeeat.com");
-        message.setTo(to);
-        message.setSubject(subject); 
-        message.setText(text);
+        MimeMessage message = emailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setFrom("noreply@letmeeat.com");
+            helper.setText(text, true);
+        }catch (Exception e){}
+
+        // use the true flag to indicate the text included is HTML
         emailSender.send(message);
     }
 
     public void sendEmail(Order order) {
 
-        String content = loadHtml();
+         String content = loadHtml();
         content = content.replace("[ORDER_N]", order.getOrderId().toString());
         content = content.replace("[TOTAL]", Double.toString(
                 order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum)));
+
         StringBuilder bodyBuilder = new StringBuilder();
+        String el = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td width=12 class=img style=font-size:0;line-height:0;text-align:left><td width=300 valign=top><div class=text style=color:#686868;font-family:Arial;font-size:14px;line-height:24px;text-align:left>[NAME]</div><table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td width=30 class=content-spacing style=font-size:0;line-height:0;text-align:left><td><div class=text2 style=color:#b0b0b0;font-family:Arial;font-size:14px;line-height:24px;text-align:left></div></table><td valign=top><div class=text-right style=color:#686868;font-family:Arial;font-size:14px;line-height:24px;text-align:right;white-space:nowrap>[PRICE]</div><div class=text-right2 style=color:#afafaf;font-family:Arial;font-size:14px;line-height:24px;text-align:right></div><td width=10 class=img style=font-size:0;line-height:0;text-align:left></table>";
         order.getDishes().forEach(d ->
-                bodyBuilder.append(String.format("<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td width=12 class=img style=font-size:0;line-height:0;text-align:left><td width=300 valign=top><div class=text style=color:#686868;font-family:Arial;font-size:14px;line-height:24px;text-align:left>%s</div><table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td width=30 class=content-spacing style=font-size:0;line-height:0;text-align:left><td><div class=text2 style=color:#b0b0b0;font-family:Arial;font-size:14px;line-height:24px;text-align:left></div></table><td valign=top><div class=text-right style=color:#686868;font-family:Arial;font-size:14px;line-height:24px;text-align:right;white-space:nowrap>%.2f</div><div class=text-right2 style=color:#afafaf;font-family:Arial;font-size:14px;line-height:24px;text-align:right></div><td width=10 class=img style=font-size:0;line-height:0;text-align:left></table>", d.getName(), d.getPrice())));
-        this.sendSimpleMessage(order.getUser().getEmail(), String.format("Receipt for order n %s", order.getOrderId()), bodyBuilder.toString());
+                bodyBuilder.append(el.replace("[NAME]", d.getName()).replace("[PRICE]", d.getPrice().toString())));
+
+        content = content.replace("[BODY]", bodyBuilder.toString());
+        this.sendSimpleMessage(order.getUser().getEmail(), String.format("Receipt for order n %s", order.getOrderId()), content);
     }
 
-    private String loadHtml(){
+    private String loadHtml() {
 
-        StringBuilder contentBuilder = new StringBuilder();
-        try (Stream<String> stream = Files.lines(Paths.get("mail.html"), StandardCharsets.UTF_8)) {
-            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        try (InputStream resource = new ClassPathResource(
+                "mail.html").getInputStream(); BufferedReader reader = new BufferedReader(
+                new InputStreamReader(resource))) {
+            return reader.lines()
+                    .collect(Collectors.joining("\n"));
         } catch (IOException e) {
-            //handle exception
+            log.error("Error in loading file", e);
+            return "";
         }
-
-        return contentBuilder.toString();
     }
+
 }
