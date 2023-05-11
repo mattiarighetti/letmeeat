@@ -29,7 +29,7 @@ public class Order {
     private Seat seat;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "dish_id", referencedColumnName = "dish_id")
+    @JoinColumn(name = "dish_id")
     private List<Dish> dishes;
 
     @ManyToOne
