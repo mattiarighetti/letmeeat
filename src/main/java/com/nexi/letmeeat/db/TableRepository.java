@@ -2,6 +2,12 @@ package com.nexi.letmeeat.db;
 
 import com.nexi.letmeeat.model.Tables;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface TableRepository extends JpaRepository<Tables, Long> {
+import java.util.List;
+
+public interface TableRepository extends JpaRepository<Tables, Long>, JpaSpecificationExecutor<Tables> {
+
+    List<Tables> findTablesByRestaurantId(String restaurantId);
+
 }

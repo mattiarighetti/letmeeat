@@ -1,5 +1,7 @@
 package com.nexi.letmeeat.rs;
 
+import com.nexi.letmeeat.model.Tables;
+import com.nexi.letmeeat.model.User;
 import com.nexi.letmeeat.resoruces.PostBookingRequest;
 import com.nexi.letmeeat.model.Menu;
 import com.nexi.letmeeat.model.Restaurant;
@@ -32,5 +34,11 @@ public interface StdApi {
 
     @GetMapping(value = "/restaurant/{restaurantId}/menu", produces = {"application/json"})
     ResponseEntity<Menu> getRestaurantMenu(@PathVariable("restaurantId") String restaurantId);
+
+    @GetMapping(value = "/restaurant/{restaurantId}/tables", produces = {"application/json"})
+    ResponseEntity<List<Tables>> getRestaurantTables(@PathVariable("restaurantId") String restaurantId);
+
+    @GetMapping(value = "/users", produces = {"application/json"})
+    ResponseEntity<List<User>> getUser();
 
 }
