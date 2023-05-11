@@ -9,6 +9,6 @@ import java.util.List;
 public interface DishRepository extends JpaRepository<Dish, Long>,
         JpaSpecificationExecutor<Dish> {
 
-    List<Dish> findDishesByDishIdIs(List<Long> ids);
+    List<Dish> findDishesByDishIdIn(List<Long> ids);
 
 }
