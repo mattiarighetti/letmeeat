@@ -36,9 +36,12 @@ public class StdApiController implements StdApi {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private MenuRepository menuRepository;
+
 
     @Override
-    public ResponseEntity<PaymentRedirectResponse> postOrder(OrderModel orderModel) throws Exception {
+    public ResponseEntity<PaymentRedirectResponse> postOrder(OrderModel orderModel) {
 
         Optional<Seat> seat = seatRepository.findById(orderModel.getSeatId());
         Optional<Dish> dish = dishRepository.findById(orderModel.getDishId());
@@ -51,14 +54,21 @@ public class StdApiController implements StdApi {
 
         orderRepository.save(order);
 
-        PaymentRedirectResponse paymentRedirectResponse = PaymentRedirectResponse.builder().
-        paymentUrl(buildPaymentUrl(order)).build();
+
+        PaymentRedirectResponse paymentRedirectResponse = null;
+        try {
+            paymentRedirectResponse = PaymentRedirectResponse.builder().
+                    paymentUrl(buildPaymentUrl(order)).build();
+        } catch (UnsupportedEncodingException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
 
         return ResponseEntity.ok(paymentRedirectResponse);
     }
 
     @Override
-    public ResponseEntity<Void> postBooking(PostBookingRequest postBookingRequest) throws Exception {
+    public ResponseEntity<Void> postBooking(PostBookingRequest postBookingRequest)  {
         bookingRepository.save(Booking.builder()
                 .table(tableRepository.findById(postBookingRequest.getTableId()).orElse(null))
                 .user(userRepository.findById(postBookingRequest.getUserId()).orElse(null))
@@ -68,13 +78,13 @@ public class StdApiController implements StdApi {
     }
 
     @Override
-    public ResponseEntity<List<Restaurant>> getRestaurant() throws Exception {
+    public ResponseEntity<List<Restaurant>> getRestaurant()  {
         return new ResponseEntity<>(restaurantRepository.findAll(), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<List<Menu>> getRestaurantMenu(String restaurantId) throws Exception {
-        return null;
+    public ResponseEntity<Menu> getRestaurantMenu(String restaurantId)  {
+        return ResponseEntity.ok(menuRepository.findMenuByRestaurantId(restaurantId));
     }
 
     private String buildPaymentUrl(Order order) throws UnsupportedEncodingException {

@@ -31,5 +31,4 @@ public class Restaurant {
     @JsonProperty
     private String imageUrl;
 
-
 }

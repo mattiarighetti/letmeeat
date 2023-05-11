@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "dishes")
@@ -31,5 +28,9 @@ public class Dish {
     @Column
     @JsonProperty
     private String price;
+
+    @ManyToOne
+    @JoinColumn(name="menu_id", nullable=false)
+    private Menu menu;
 
 }

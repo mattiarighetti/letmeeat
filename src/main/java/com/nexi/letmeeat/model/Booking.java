@@ -1,7 +1,9 @@
 package com.nexi.letmeeat.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -12,6 +14,8 @@ import javax.persistence.Table;
 @DynamicUpdate
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Booking {
 
     @Id

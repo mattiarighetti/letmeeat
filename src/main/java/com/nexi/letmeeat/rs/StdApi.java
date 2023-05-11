@@ -19,19 +19,18 @@ public interface StdApi {
     @PostMapping(value = "/order", consumes = {"application/json"})
     ResponseEntity<PaymentRedirectResponse> postOrder(
             @RequestBody OrderModel order)
-            throws Exception;
+          ;
 
     @PostMapping(value = "/booking", produces = {"application/json"})
     ResponseEntity<Void> postBooking(
             @RequestBody PostBookingRequest postBookingRequest)
-            throws Exception;
+          ;
 
     @GetMapping(value = "/restaurant", produces = {"application/json"})
     ResponseEntity<List<Restaurant>> getRestaurant()
-            throws Exception;
+          ;
 
     @GetMapping(value = "/restaurant/{restaurantId}/menu", produces = {"application/json"})
-    ResponseEntity<List<Menu>> getRestaurantMenu(@PathVariable("restaurantId") String restaurantId)
-            throws Exception;
+    ResponseEntity<Menu> getRestaurantMenu(@PathVariable("restaurantId") String restaurantId);
 
 }
