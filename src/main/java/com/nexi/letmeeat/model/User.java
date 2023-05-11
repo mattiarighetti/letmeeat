@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -30,5 +28,8 @@ public class User {
     @Column
     @JsonProperty
     private String email;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 
 }

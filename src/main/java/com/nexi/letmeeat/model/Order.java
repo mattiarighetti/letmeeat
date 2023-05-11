@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -27,9 +28,13 @@ public class Order {
     @JoinColumn(name = "seat_id", referencedColumnName = "seat_id")
     private Seat seat;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "dish_id", referencedColumnName = "dish_id")
-    private Dish dish;
+    private List<Dish> dishes;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User user;
 
     @Column
     private String status;
