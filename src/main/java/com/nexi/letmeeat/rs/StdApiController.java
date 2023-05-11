@@ -114,6 +114,11 @@ public class StdApiController implements StdApi {
     }
 
     @Override
+    public ResponseEntity<List<Order>> getOrder()  {
+        return new ResponseEntity<>(orderRepository.findAll(), HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<String> paymentSuccess(@RequestParam String orderId) {
 
         Order order = orderRepository.findById(Long.parseLong(orderId)).orElse(null);
