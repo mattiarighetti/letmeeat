@@ -18,7 +18,7 @@ public class Menu {
     @JsonProperty
     private Long menuId;
 
-    @OneToMany(mappedBy="dishes")
+    @OneToMany(mappedBy="menu")
     @JsonProperty
     private List<Dish> dish;
 
