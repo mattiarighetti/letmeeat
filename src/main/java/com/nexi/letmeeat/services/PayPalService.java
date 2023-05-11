@@ -6,6 +6,7 @@ import com.nexi.letmeeat.db.SeatRepository;
 import com.nexi.letmeeat.db.UserRepository;
 import com.nexi.letmeeat.model.Payment;
 import com.nexi.letmeeat.resoruces.CreateOrderResponse;
+import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import com.nexi.letmeeat.utils.EmailService;
 import com.paypal.core.PayPalEnvironment;
 import com.paypal.core.PayPalHttpClient;
@@ -15,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
@@ -41,7 +44,9 @@ public class PayPalService {
         client = new PayPalHttpClient(new PayPalEnvironment.Sandbox(clientId, clientSecret));
     }
 
-    public CreateOrderResponse createOrder(Double amount, Long userId, Long seatId, URI returnUrl) throws IOException {
+    public PaymentRedirectResponse createOrder(Double amount, Long userId, Long seatId, Long orderId, HttpServletRequest request) throws IOException {
+
+        URI returnUrl = buildReturnUrl(request, orderId);
 
         final OrderRequest orderRequest = createOrderRequest(amount, returnUrl);
         final OrdersCreateRequest ordersCreateRequest = new OrdersCreateRequest().requestBody(orderRequest);
@@ -49,13 +54,14 @@ public class PayPalService {
         final Order order = orderHttpResponse.result();
         LinkDescription approveUri = extractApprovalLink(order);
 
-        Payment payment = paymentRepository.save(Payment.builder()
+        paymentRepository.save(Payment.builder()
                 .seat(seatRepository.findById(seatId).orElse(null))
                 .user(userRepository.findById(userId).orElse(null))
                 .status("CREATED")
                 .total_amount(amount)
                 .build());
-        return new CreateOrderResponse(order.id(), URI.create(approveUri.href()), payment.getPaymentId());
+
+        return new PaymentRedirectResponse(URI.create(approveUri.href()).toString());
     }
 
     private OrderRequest createOrderRequest(Double totalAmount, URI returnUrl) {
@@ -88,17 +94,17 @@ public class PayPalService {
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    public void successOrder(Long paymentId, Long orderId) {
-
-        Payment payment = paymentRepository.findById(paymentId).orElse(null);
-
-        if(payment != null) {
-            payment.setStatus("COMPLETED");
-            paymentRepository.save(payment);
+    private URI buildReturnUrl(HttpServletRequest request, Long orderId) {
+        try {
+            URI requestUri = URI.create(request.getRequestURL().toString());
+            return new URI(requestUri.getScheme(),
+                    requestUri.getUserInfo(),
+                    requestUri.getHost(),
+                    requestUri.getPort(),
+                    "/payment/success",
+                    "orderId=" + orderId, null);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
-
-        com.nexi.letmeeat.model.Order order = orderRepository.findById(orderId).orElse(null);
-
-        emailService.sendEmail(order);
     }
 }

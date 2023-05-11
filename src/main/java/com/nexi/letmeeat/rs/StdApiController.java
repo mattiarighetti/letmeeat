@@ -2,16 +2,20 @@ package com.nexi.letmeeat.rs;
 
 import com.nexi.letmeeat.db.*;
 import com.nexi.letmeeat.model.*;
+import com.nexi.letmeeat.resoruces.CreateOrderResponse;
 import com.nexi.letmeeat.resoruces.OrderModel;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import com.nexi.letmeeat.resoruces.PostBookingRequest;
+import com.nexi.letmeeat.services.PayPalService;
 import com.nexi.letmeeat.utils.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -51,11 +55,12 @@ public class StdApiController implements StdApi {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private PayPalService payPalService;
+
 
     @Override
-    public ResponseEntity<PaymentRedirectResponse> postOrder(OrderModel orderModel) {
-
-
+    public ResponseEntity<PaymentRedirectResponse> postOrder(OrderModel orderModel, HttpServletRequest request) throws IOException {
 
         Optional<Seat> seat = seatRepository.findById(orderModel.getSeatId());
         List<Dish> dishes = dishRepository.findDishesByDishIdIn(orderModel.getDishIds());
@@ -68,13 +73,9 @@ public class StdApiController implements StdApi {
 
         orderRepository.save(order);
 
-        PaymentRedirectResponse paymentRedirectResponse;
-        try {
-            paymentRedirectResponse = PaymentRedirectResponse.builder().
-                    paymentUrl(buildPaymentUrl(order)).build();
-        } catch (UnsupportedEncodingException e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        Double amount = order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum);
+
+        PaymentRedirectResponse paymentRedirectResponse = payPalService.createOrder(amount, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), request);
 
         return ResponseEntity.ok(paymentRedirectResponse);
     }
@@ -109,8 +110,16 @@ public class StdApiController implements StdApi {
         return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
     }
 
-    private String buildPaymentUrl(Order order) throws UnsupportedEncodingException {
-        return URLEncoder.encode("https://paypal:)", "UTF-8");
+    @Override
+    public ResponseEntity<String> paymentSuccess(@RequestParam String orderId) {
+
+        Order order = orderRepository.findById(Long.parseLong(orderId)).orElse(null);
+
+        if(order != null) {
+            emailService.sendEmail(order);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 }

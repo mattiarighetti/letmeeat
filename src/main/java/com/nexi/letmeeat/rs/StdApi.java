@@ -8,11 +8,10 @@ import com.nexi.letmeeat.model.Restaurant;
 import com.nexi.letmeeat.resoruces.OrderModel;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -20,8 +19,9 @@ public interface StdApi {
 
     @PostMapping(value = "/order", consumes = {"application/json"})
     ResponseEntity<PaymentRedirectResponse> postOrder(
-            @RequestBody OrderModel order)
-          ;
+            @RequestBody OrderModel order,
+            HttpServletRequest request) throws IOException
+            ;
 
     @PostMapping(value = "/booking", produces = {"application/json"})
     ResponseEntity<Void> postBooking(
@@ -40,5 +40,8 @@ public interface StdApi {
 
     @GetMapping(value = "/users", produces = {"application/json"})
     ResponseEntity<List<User>> getUser();
+
+    @GetMapping(value = "/payment/success", produces = {"application/json"})
+    ResponseEntity<String> paymentSuccess(@RequestParam String orderId);
 
 }
