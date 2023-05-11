@@ -99,6 +99,16 @@ public class StdApiController implements StdApi {
         return ResponseEntity.ok(menuRepository.findMenuByRestaurantId(restaurantId));
     }
 
+    @Override
+    public ResponseEntity<List<Tables>> getRestaurantTables(String restaurantId)  {
+        return ResponseEntity.ok(tableRepository.findTablesByRestaurantId(restaurantId));
+    }
+
+    @Override
+    public ResponseEntity<List<User>> getUser()  {
+        return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
+    }
+
     private String buildPaymentUrl(Order order) throws UnsupportedEncodingException {
         return URLEncoder.encode("https://paypal:)", "UTF-8");
     }
