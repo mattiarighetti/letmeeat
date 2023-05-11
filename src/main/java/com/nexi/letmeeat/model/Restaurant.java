@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "restaurants")
+@Table(name = "RESTAURANTS")
 @DynamicUpdate
 @Data
 public class Restaurant {
@@ -27,5 +25,11 @@ public class Restaurant {
     @Column
     @JsonProperty
     private String category;
+
+
+    @Column
+    @JsonProperty
+    private String imageUrl;
+
 
 }

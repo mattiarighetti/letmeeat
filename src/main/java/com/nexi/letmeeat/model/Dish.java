@@ -28,7 +28,6 @@ public class Dish {
     @JsonProperty
     private String image;
 
-
     @Column
     @JsonProperty
     private String price;

@@ -1,10 +1,10 @@
 package com.nexi.letmeeat.db;
 
-import com.nexi.letmeeat.model.User;
+import com.nexi.letmeeat.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface UserRepository extends JpaRepository<User, Long>,
-        JpaSpecificationExecutor<User> {
+public interface OrderRepository extends JpaRepository<Order, Long>,
+        JpaSpecificationExecutor<Order> {
 
 }
