@@ -1,5 +1,6 @@
 package com.nexi.letmeeat.rs;
 
+import com.nexi.letmeeat.model.Booking;
 import com.nexi.letmeeat.model.Menu;
 import com.nexi.letmeeat.model.Order;
 import com.nexi.letmeeat.model.Restaurant;
@@ -14,6 +15,11 @@ public class StdApiController implements StdApi {
 
     @Override
     public ResponseEntity<Void> postOrder(Order order) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Void> postBooking(Booking booking) throws Exception {
         return null;
     }
 

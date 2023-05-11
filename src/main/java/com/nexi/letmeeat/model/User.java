@@ -10,20 +10,25 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "restaurants")
+@Table(name = "users")
 @DynamicUpdate
 @Data
-public class Restaurant {
-
+public class User {
     @Id
-    @Column(name = "restaurant_id")
+    @Column(name = "user_id")
     @JsonProperty
-    private Long restaurantId;
+    private Long userId;
 
     @Column
+    @JsonProperty
     private String name;
 
     @Column
-    private String category;
+    @JsonProperty
+    private String surname;
+
+    @Column
+    @JsonProperty
+    private String email;
 
 }
