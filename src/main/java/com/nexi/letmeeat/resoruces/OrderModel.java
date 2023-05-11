@@ -13,4 +13,7 @@ public class OrderModel {
 
     @JsonProperty
     private Long seatId;
+
+    @JsonProperty
+    private Long userId;
 }

@@ -4,6 +4,8 @@ package com.nexi.letmeeat.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -12,7 +14,8 @@ import java.util.List;
 @Entity
 @Table(name = "dishes")
 @DynamicUpdate
-@Data
+@Getter
+@Setter
 public class Dish {
 
     @Id
@@ -43,4 +46,16 @@ public class Dish {
     @ManyToMany
     private List<Order> order;
 
+    @Override
+    public String toString() {
+        return "Dish{" +
+                "dishId=" + dishId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", price=" + price +
+                ", menu=" + menu +
+                ", order=" + order +
+                '}';
+    }
 }

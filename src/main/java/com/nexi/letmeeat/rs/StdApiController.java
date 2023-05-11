@@ -64,11 +64,13 @@ public class StdApiController implements StdApi {
 
         Optional<Seat> seat = seatRepository.findById(orderModel.getSeatId());
         List<Dish> dishes = dishRepository.findDishesByDishIdIn(orderModel.getDishIds());
+        User user = userRepository.findById(orderModel.getUserId()).orElse(null);
 
         if (!seat.isPresent() || dishes.isEmpty())
             return ResponseEntity.badRequest().build();
 
-        Order order = Order.builder().seat(seat.get()).dishes(dishes).
+        Order order = Order.builder().seat(seat.get()).dishes(dishes)
+                        .user(user).
                 status(Order.Status.PENDING.name()).build();
 
         orderRepository.save(order);
