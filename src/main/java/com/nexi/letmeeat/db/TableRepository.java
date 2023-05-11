@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface TableRepository extends JpaRepository<Tables, Long>, JpaSpecificationExecutor<Tables> {
 
-    List<Tables> findTablesByRestaurantId(String restaurantId);
+    List<Tables> findTablesByRestaurant(String restaurantId);
 
 }
