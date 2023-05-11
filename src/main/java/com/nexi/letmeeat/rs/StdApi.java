@@ -1,10 +1,7 @@
 package com.nexi.letmeeat.rs;
 
-import com.nexi.letmeeat.model.Tables;
-import com.nexi.letmeeat.model.User;
+import com.nexi.letmeeat.model.*;
 import com.nexi.letmeeat.resoruces.PostBookingRequest;
-import com.nexi.letmeeat.model.Menu;
-import com.nexi.letmeeat.model.Restaurant;
 import com.nexi.letmeeat.resoruces.OrderModel;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +18,10 @@ public interface StdApi {
     ResponseEntity<PaymentRedirectResponse> postOrder(
             @RequestBody OrderModel order,
             HttpServletRequest request) throws IOException
+            ;
+
+    @GetMapping(value = "/orders", produces = {"application/json"})
+    ResponseEntity<List<Order>> getOrder()
             ;
 
     @PostMapping(value = "/booking", produces = {"application/json"})

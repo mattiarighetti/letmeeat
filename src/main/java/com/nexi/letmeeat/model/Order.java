@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.persistence.Table;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -35,6 +36,9 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
+
+    @Column
+    private Date date;
 
     @Column
     private String status;
