@@ -20,7 +20,7 @@ public class Menu {
 
     @OneToMany(mappedBy="menu")
     @JsonProperty
-    private List<Dish> dish;
+    private List<Dish> dishes;
 
     @Column
     @JsonProperty

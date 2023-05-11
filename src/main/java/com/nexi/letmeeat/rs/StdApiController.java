@@ -56,7 +56,6 @@ public class StdApiController implements StdApi {
 
         orderRepository.save(order);
 
-
         PaymentRedirectResponse paymentRedirectResponse;
         try {
             paymentRedirectResponse = PaymentRedirectResponse.builder().
@@ -64,7 +63,6 @@ public class StdApiController implements StdApi {
         } catch (UnsupportedEncodingException e) {
             return ResponseEntity.internalServerError().build();
         }
-
 
         return ResponseEntity.ok(paymentRedirectResponse);
     }
@@ -87,7 +85,6 @@ public class StdApiController implements StdApi {
     @Override
     public ResponseEntity<Menu> getRestaurantMenu(String restaurantId)  {
         Menu menu = menuRepository.findMenuByRestaurantId(restaurantId);
-        log.debug("Menu {}", menu);
         return ResponseEntity.ok(menuRepository.findMenuByRestaurantId(restaurantId));
     }
 
