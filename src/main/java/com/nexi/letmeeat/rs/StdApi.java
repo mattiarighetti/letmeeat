@@ -1,10 +1,8 @@
 package com.nexi.letmeeat.rs;
 
-import com.nexi.letmeeat.model.Tables;
-import com.nexi.letmeeat.model.User;
+import com.nexi.letmeeat.model.*;
+import com.nexi.letmeeat.resoruces.BookingConfirmation;
 import com.nexi.letmeeat.resoruces.PostBookingRequest;
-import com.nexi.letmeeat.model.Menu;
-import com.nexi.letmeeat.model.Restaurant;
 import com.nexi.letmeeat.resoruces.OrderModel;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +22,7 @@ public interface StdApi {
             ;
 
     @PostMapping(value = "/booking", produces = {"application/json"})
-    ResponseEntity<Void> postBooking(
+    ResponseEntity<BookingConfirmation> postBooking(
             @RequestBody PostBookingRequest postBookingRequest)
           ;
 
@@ -43,5 +41,8 @@ public interface StdApi {
 
     @GetMapping(value = "/payment/success", produces = {"application/json"})
     ResponseEntity<String> paymentSuccess(@RequestParam String orderId);
+
+    @GetMapping(value = "/user/{userId}/payment", produces = {"application/json"})
+    ResponseEntity<List<Payment>> payment(@PathVariable("userId") Long userId);
 
 }

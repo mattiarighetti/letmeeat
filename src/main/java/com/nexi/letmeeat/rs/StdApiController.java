@@ -2,7 +2,7 @@ package com.nexi.letmeeat.rs;
 
 import com.nexi.letmeeat.db.*;
 import com.nexi.letmeeat.model.*;
-import com.nexi.letmeeat.resoruces.CreateOrderResponse;
+import com.nexi.letmeeat.resoruces.BookingConfirmation;
 import com.nexi.letmeeat.resoruces.OrderModel;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import com.nexi.letmeeat.resoruces.PostBookingRequest;
@@ -17,15 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Controller
 @Slf4j
@@ -58,7 +53,6 @@ public class StdApiController implements StdApi {
     @Autowired
     private PayPalService payPalService;
 
-
     @Override
     public ResponseEntity<PaymentRedirectResponse> postOrder(OrderModel orderModel, HttpServletRequest request) throws IOException {
 
@@ -70,7 +64,7 @@ public class StdApiController implements StdApi {
             return ResponseEntity.badRequest().build();
 
         Order order = Order.builder().seat(seat.get()).dishes(dishes)
-                        .user(user).
+                .user(user).
                 status(Order.Status.PENDING.name()).build();
 
         orderRepository.save(order);
@@ -83,13 +77,13 @@ public class StdApiController implements StdApi {
     }
 
     @Override
-    public ResponseEntity<Void> postBooking(PostBookingRequest postBookingRequest) {
+    public ResponseEntity<BookingConfirmation> postBooking(PostBookingRequest postBookingRequest) {
         bookingRepository.save(Booking.builder()
                 .table(tableRepository.findById(postBookingRequest.getTableId()).orElse(null))
                 .user(userRepository.findById(postBookingRequest.getUserId()).orElse(null))
                 .build());
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        return ResponseEntity.ok(new BookingConfirmation(  simpleDateFormat.format(new Date())));
     }
 
     @Override
@@ -103,12 +97,12 @@ public class StdApiController implements StdApi {
     }
 
     @Override
-    public ResponseEntity<List<Tables>> getRestaurantTables(String restaurantId)  {
+    public ResponseEntity<List<Tables>> getRestaurantTables(String restaurantId) {
         return ResponseEntity.ok(tableRepository.findTablesByRestaurantId(restaurantId));
     }
 
     @Override
-    public ResponseEntity<List<User>> getUser()  {
+    public ResponseEntity<List<User>> getUser() {
         return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
     }
 
@@ -117,11 +111,24 @@ public class StdApiController implements StdApi {
 
         Order order = orderRepository.findById(Long.parseLong(orderId)).orElse(null);
 
-        if(order != null) {
+        if (order != null) {
             emailService.sendEmail(order);
             return new ResponseEntity<>(HttpStatus.OK);
-        }
-        else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public ResponseEntity<List<Payment>> payment(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (!user.isPresent())
+            return ResponseEntity.badRequest().build();
+
+        user.get().getPayments().forEach(
+                payment -> payment.setReceipt(
+                        emailService.buildReceipt(orderRepository.findById(payment.getPaymentId()).get())
+                ));
+
+        return ResponseEntity.ok(user.get().getPayments());
     }
 
 }

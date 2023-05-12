@@ -5,9 +5,7 @@ import com.nexi.letmeeat.model.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +33,9 @@ public class EmailService {
             helper.setSubject(subject);
             helper.setFrom("noreply@letmeeat.com");
             helper.setText(text, true);
-        }catch (Exception e){}
+        } catch (Exception e) {
+
+        }
 
         // use the true flag to indicate the text included is HTML
         emailSender.send(message);
@@ -43,7 +43,11 @@ public class EmailService {
 
     public void sendEmail(Order order) {
 
-         String content = loadHtml();
+        this.sendSimpleMessage(order.getUser().getEmail(), String.format("Receipt for order n %s", order.getOrderId()), buildReceipt(order));
+    }
+
+    public String buildReceipt(Order order) {
+        String content = loadHtml();
         content = content.replace("[ORDER_N]", order.getOrderId().toString());
         content = content.replace("[TOTAL]", Double.toString(
                 order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum)));
@@ -53,8 +57,7 @@ public class EmailService {
         order.getDishes().forEach(d ->
                 bodyBuilder.append(el.replace("[NAME]", d.getName()).replace("[PRICE]", d.getPrice().toString())));
 
-        content = content.replace("[BODY]", bodyBuilder.toString());
-        this.sendSimpleMessage(order.getUser().getEmail(), String.format("Receipt for order n %s", order.getOrderId()), content);
+        return content.replace("[BODY]", bodyBuilder.toString());
     }
 
     private String loadHtml() {

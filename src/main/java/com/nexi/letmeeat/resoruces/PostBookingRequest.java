@@ -12,4 +12,7 @@ public class PostBookingRequest {
     @JsonProperty
     private Long userId;
 
+    @JsonProperty
+    private Long restaurantId;
+
 }

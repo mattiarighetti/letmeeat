@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.List;
+import java.nio.DoubleBuffer;
 
 @Entity
 @Table(name = "PAYMENTS")
@@ -35,6 +35,11 @@ public class Payment {
     private Double total_amount;
 
     @Column
+    private Long orderId;
+
+    @Column
     private String status;
+
+    private String receipt;
 
 }

@@ -5,7 +5,6 @@ import com.nexi.letmeeat.db.PaymentRepository;
 import com.nexi.letmeeat.db.SeatRepository;
 import com.nexi.letmeeat.db.UserRepository;
 import com.nexi.letmeeat.model.Payment;
-import com.nexi.letmeeat.resoruces.CreateOrderResponse;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import com.nexi.letmeeat.utils.EmailService;
 import com.paypal.core.PayPalEnvironment;
@@ -40,7 +39,7 @@ public class PayPalService {
     private PayPalHttpClient client;
 
     public PayPalService(@Value("${paypal.client.id}") String clientId,
-                                @Value("${paypal.client.secret}") String clientSecret) {
+                         @Value("${paypal.client.secret}") String clientSecret) {
         client = new PayPalHttpClient(new PayPalEnvironment.Sandbox(clientId, clientSecret));
     }
 
@@ -59,6 +58,7 @@ public class PayPalService {
                 .user(userRepository.findById(userId).orElse(null))
                 .status("CREATED")
                 .total_amount(amount)
+                .orderId(orderId)
                 .build());
 
         return new PaymentRedirectResponse(URI.create(approveUri.href()).toString());
