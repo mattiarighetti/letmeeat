@@ -48,6 +48,4 @@ public class Payment {
     @Column
     private String status;
 
-    private String receipt;
-
 }
