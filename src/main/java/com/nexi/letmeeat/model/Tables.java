@@ -1,5 +1,6 @@
 package com.nexi.letmeeat.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
@@ -25,8 +26,9 @@ public class Tables {
     @JsonProperty
     private String name;
 
-    @JsonProperty
-    @Column(name = "restaurant_id")
-    private String restaurantId;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @JoinColumn(name = "RESTAURANT_ID", nullable = false)
+    private Restaurant restaurant;
 
 }

@@ -14,6 +14,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +24,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Controller
 @Slf4j
@@ -91,8 +104,14 @@ public class StdApiController implements StdApi {
     }
 
     @Override
-    public ResponseEntity<List<Restaurant>> getRestaurant() {
-        return new ResponseEntity<>(restaurantRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<Restaurant>> getRestaurant(Long userId) {
+        if (ObjectUtils.isEmpty(userId)) {
+            return new ResponseEntity<>(restaurantRepository.findAll(), HttpStatus.OK);
+        } else {
+            List<Restaurant> restaurants = restaurantRepository.findAll();
+            restaurants.forEach(restaurant -> restaurant.setBookings(restaurant.getBookings().stream().filter(booking -> booking.getUser().getUserId().equals(userId)).collect(Collectors.toList())));
+            return new ResponseEntity<>(restaurants, HttpStatus.OK);
+        }
     }
 
     @Override
@@ -101,13 +120,29 @@ public class StdApiController implements StdApi {
     }
 
     @Override
-    public ResponseEntity<List<Tables>> getRestaurantTables(String restaurantId) {
-        return ResponseEntity.ok(tableRepository.findTablesByRestaurantId(restaurantId));
+    public ResponseEntity<List<Tables>> getRestaurantTables(String restaurantId)  {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setRestaurantId(Long.parseLong(restaurantId));
+        return ResponseEntity.ok(tableRepository.findTablesByRestaurant(restaurant));
     }
 
     @Override
     public ResponseEntity<List<User>> getUser() {
         return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<Payment>> getUserPayments(String userId)  {
+        User user = new User();
+        user.setUserId(Long.parseLong(userId));
+        return ResponseEntity.ok(paymentRepository.findPaymentsByUser(user));
+    }
+
+    @Override
+    public ResponseEntity<List<Booking>> getUserBookings(String userId)  {
+        User user = new User();
+        user.setUserId(Long.parseLong(userId));
+        return ResponseEntity.ok(bookingRepository.findBookingByUser(user));
     }
 
     @Override

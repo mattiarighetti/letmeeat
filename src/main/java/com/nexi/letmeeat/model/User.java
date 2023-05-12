@@ -1,5 +1,6 @@
 package com.nexi.letmeeat.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
@@ -34,5 +35,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Payment> payments;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Booking> bookings;
 
 }
