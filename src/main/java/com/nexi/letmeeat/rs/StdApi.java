@@ -31,7 +31,7 @@ public interface StdApi {
           ;
 
     @GetMapping(value = "/restaurant", produces = {"application/json"})
-    ResponseEntity<List<Restaurant>> getRestaurant()
+    ResponseEntity<List<Restaurant>> getRestaurant(@RequestParam(required = false) Long userId)
           ;
 
     @GetMapping(value = "/restaurant/{restaurantId}/menu", produces = {"application/json"})
@@ -42,6 +42,12 @@ public interface StdApi {
 
     @GetMapping(value = "/users", produces = {"application/json"})
     ResponseEntity<List<User>> getUser();
+
+    @GetMapping(value = "/users/{userId}/payments", produces = {"application/json"})
+    ResponseEntity<List<Payment>> getUserPayments(@PathVariable("userId") String userId);
+
+    @GetMapping(value = "/users/{userId}/bookings", produces = {"application/json"})
+    ResponseEntity<List<Booking>> getUserBookings(@PathVariable("userId") String userId);
 
     @GetMapping(value = "/payment/success", produces = {"application/json"})
     ResponseEntity<String> paymentSuccess(@RequestParam String orderId);

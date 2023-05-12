@@ -11,6 +11,7 @@ import java.util.List;
 @Table(name = "RESTAURANTS")
 @DynamicUpdate
 @Data
+
 public class Restaurant {
 
     @Id
@@ -30,5 +31,9 @@ public class Restaurant {
     @Column
     @JsonProperty
     private String imageUrl;
+
+    @OneToMany(mappedBy="restaurant")
+    @JsonProperty
+    private List<Booking> bookings;
 
 }
