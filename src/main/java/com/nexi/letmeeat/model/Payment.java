@@ -51,7 +51,6 @@ public class Payment {
     @Column
     private String status;
 
-    @Transient
     private String receipt;
 
 }
