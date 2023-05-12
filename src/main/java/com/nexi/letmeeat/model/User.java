@@ -15,6 +15,7 @@ import java.util.List;
 public class User {
     @Id
     @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
     private Long userId;
 

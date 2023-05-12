@@ -19,6 +19,7 @@ import java.util.List;
 public class Dish {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "dish_id")
     private Long dishId;
 

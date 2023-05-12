@@ -31,7 +31,7 @@ public class Booking {
 
     @JsonIgnore
     @ManyToOne()
-    @JoinColumn(name = "RESTAURANT_ID", nullable = false)
+    @JoinColumn(name = "RESTAURANT_ID", nullable = true)
     private Restaurant restaurant;
 
     @JsonIgnore

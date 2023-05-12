@@ -13,6 +13,7 @@ import javax.persistence.*;
 @Data
 public class Seat {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "seat_id")
     private Long seatId;
 

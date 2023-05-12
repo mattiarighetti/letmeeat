@@ -14,6 +14,7 @@ import java.util.List;
 public class Menu {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "menu_id")
     @JsonProperty
     private Long menuId;
