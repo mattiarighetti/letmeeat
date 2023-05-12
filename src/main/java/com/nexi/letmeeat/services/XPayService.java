@@ -1,21 +1,34 @@
 package com.nexi.letmeeat.services;
 
 import antlr.StringUtils;
+import com.nexi.letmeeat.db.PaymentRepository;
+import com.nexi.letmeeat.db.SeatRepository;
+import com.nexi.letmeeat.db.UserRepository;
+import com.nexi.letmeeat.model.Payment;
 import com.nexi.letmeeat.resoruces.PayByLinkRequest;
 import com.nexi.letmeeat.resoruces.PayByLinkResponse;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
 public class XPayService {
 
-    public PaymentRedirectResponse payByLink(PayByLinkRequest payByLinkRequest){
+    @Autowired
+    private PaymentRepository paymentRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private SeatRepository seatRepository;
+
+    public PaymentRedirectResponse payByLink(PayByLinkRequest payByLinkRequest, Long userId, Long seatId, Long orderId, String restaurantName, Double amount){
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -30,6 +43,16 @@ public class XPayService {
                 HttpMethod.POST,
                 entity,
                 PayByLinkResponse.class);
+
+        paymentRepository.save(Payment.builder()
+                .seat(seatRepository.findById(seatId).orElse(null))
+                .user(userRepository.findById(userId).orElse(null))
+                .status("CREATED")
+                .restaurantName(restaurantName)
+                .total_amount(amount)
+                .orderId(orderId)
+                .timestamp(new Date())
+                .build());
 
         return new PaymentRedirectResponse(response.getBody().getPaymentLink().getLink());
     }
