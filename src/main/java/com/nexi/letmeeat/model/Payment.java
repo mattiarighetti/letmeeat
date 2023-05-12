@@ -1,6 +1,7 @@
 package com.nexi.letmeeat.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,10 +27,12 @@ public class Payment {
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "SEAT_ID")
+    @JsonIgnore
     private Seat seat;
 
     @Column(name = "TOTAL_AMOUNT")
