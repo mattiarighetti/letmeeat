@@ -125,7 +125,7 @@ public class StdApiController implements StdApi {
                     .expirationDate("2023-05-31")
                     .build();
 
-            paymentRedirectResponse = xPayService.payByLink(payByLinkRequest);
+            paymentRedirectResponse = xPayService.payByLink(payByLinkRequest, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), order.getSeat().getTables().getRestaurant().getName(), amount);
         }
         return ResponseEntity.ok(paymentRedirectResponse);
     }
