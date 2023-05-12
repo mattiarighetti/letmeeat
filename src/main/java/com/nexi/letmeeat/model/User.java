@@ -33,6 +33,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Payment> payments;
 
