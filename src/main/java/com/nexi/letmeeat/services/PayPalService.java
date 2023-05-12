@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.NoSuchElementException;
 
 @Service
@@ -59,6 +60,7 @@ public class PayPalService {
                 .status("CREATED")
                 .total_amount(amount)
                 .orderId(orderId)
+                .timestamp(new Date())
                 .build());
 
         return new PaymentRedirectResponse(URI.create(approveUri.href()).toString());

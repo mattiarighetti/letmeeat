@@ -1,5 +1,6 @@
 package com.nexi.letmeeat.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.nio.DoubleBuffer;
+import java.util.Date;
 
 @Entity
 @Table(name = "PAYMENTS")
@@ -33,6 +34,10 @@ public class Payment {
 
     @Column(name = "TOTAL_AMOUNT")
     private Double total_amount;
+
+    @Column(name = "timestamp")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    private Date timestamp;
 
     @Column
     private Long orderId;
