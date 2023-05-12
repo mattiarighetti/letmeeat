@@ -6,6 +6,7 @@ import com.nexi.letmeeat.resoruces.*;
 import com.nexi.letmeeat.services.PayPalService;
 import com.nexi.letmeeat.services.XPayService;
 import com.nexi.letmeeat.utils.EmailService;
+import com.sun.javaws.jnl.RContentDesc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -180,7 +181,10 @@ public class StdApiController implements StdApi {
         User user = new User();
         user.setUserId(Long.parseLong(userId));
         List<Booking> bookings = bookingRepository.findBookingByUser(user);
-        bookings.forEach(booking -> booking.setRestaurantName(booking.getRestaurant().getName()));
+        bookings.forEach(booking -> {
+            if(booking.getRestaurant() != null)
+                booking.setRestaurantName(booking.getRestaurant().getName());
+        });
         return ResponseEntity.ok(bookings);
     }
 
