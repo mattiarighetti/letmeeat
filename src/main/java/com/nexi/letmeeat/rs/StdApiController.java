@@ -2,11 +2,9 @@ package com.nexi.letmeeat.rs;
 
 import com.nexi.letmeeat.db.*;
 import com.nexi.letmeeat.model.*;
-import com.nexi.letmeeat.resoruces.BookingConfirmation;
-import com.nexi.letmeeat.resoruces.OrderModel;
-import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
-import com.nexi.letmeeat.resoruces.PostBookingRequest;
+import com.nexi.letmeeat.resoruces.*;
 import com.nexi.letmeeat.services.PayPalService;
+import com.nexi.letmeeat.services.XPayService;
 import com.nexi.letmeeat.utils.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +19,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,8 +65,11 @@ public class StdApiController implements StdApi {
     @Autowired
     private PayPalService payPalService;
 
+    @Autowired
+    private XPayService xPayService;
+
     @Override
-    public ResponseEntity<PaymentRedirectResponse> postOrder(OrderModel orderModel, HttpServletRequest request) throws IOException {
+    public ResponseEntity<PaymentRedirectResponse> postOrder(Integer type, OrderModel orderModel, HttpServletRequest request) throws IOException {
 
         Optional<Seat> seat = seatRepository.findById(orderModel.getSeatId());
         List<Dish> dishes = dishRepository.findDishesByDishIdIn(orderModel.getDishIds());
@@ -80,8 +78,6 @@ public class StdApiController implements StdApi {
         if (!seat.isPresent() || dishes.isEmpty())
             return ResponseEntity.badRequest().build();
 
-
-
         Order order = Order.builder().seat(seat.get()).dishes(dishes)
                 .user(user).
                 status(Order.Status.PENDING.name()).build();
@@ -89,9 +85,48 @@ public class StdApiController implements StdApi {
         orderRepository.save(order);
 
         Double amount = order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum);
+        PaymentRedirectResponse paymentRedirectResponse;
+        if(type == 1) {
+            paymentRedirectResponse = payPalService.createOrder(amount, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), order.getSeat().getTables().getRestaurant().getName(), request);
+        }
+        else {
+            CustomerInfo customerInfo = CustomerInfo.builder()
+                    .cardHolderName(order.getUser().getName())
+                    .cardHolderEmail(order.getUser().getEmail())
+                    .mobilePhone("3380402457")
+                    .build();
+            Recurrence recurrence = Recurrence.builder()
+                    .action("NO_RECURRING")
+                    .contractId(UUID.randomUUID().toString().substring(1,15))
+                    .contractType("MIT_UNSCHEDULED")
+                    .build();
+            PaymentSession paymentSession = PaymentSession.builder()
+                    .actionType("PAY")
+                    .amount((long) (amount * 100))
+                    .recurrence(recurrence)
+                    .captureType("IMPLICIT")
+                    .exemptions("NO_PREFERENCE")
+                    .language("ita")
+                    .notificationUrl("https://letmeeat2.osc-fr1.scalingo.io/payment/success")
+                    .paymentService("CARDS")
+                    .build();
+            XPayOrder xPayOrder = XPayOrder.builder()
+                    .orderId(UUID.randomUUID().toString().substring(0,25))
+                    .amount((long) (amount * 100))
+                    .currency("EUR")
+                    .customerId(order.getSeat().getTables().getRestaurant().getRestaurantId().toString())
+                    .description(order.getSeat().getTables().getRestaurant().getRestaurantId().toString())
+                    .customField("")
+                    .customerInfo(customerInfo)
+                    .build();
+            PayByLinkRequest payByLinkRequest = PayByLinkRequest.builder()
+                    .order(xPayOrder)
+                    .paymentSession(paymentSession)
+                    .expirationDate("2023-05-31")
+                    .build();
 
-        PaymentRedirectResponse paymentRedirectResponse = payPalService.createOrder(amount, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), seat.get().getTables().getRestaurant().getName(), request);
-
+            paymentRedirectResponse = xPayService.payByLink(payByLinkRequest);
+        }
         return ResponseEntity.ok(paymentRedirectResponse);
     }
 
