@@ -43,6 +43,9 @@ public class Payment {
     private Long orderId;
 
     @Column
+    private String restaurantName;
+
+    @Column
     private String status;
 
     private String receipt;

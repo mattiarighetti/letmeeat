@@ -80,6 +80,8 @@ public class StdApiController implements StdApi {
         if (!seat.isPresent() || dishes.isEmpty())
             return ResponseEntity.badRequest().build();
 
+
+
         Order order = Order.builder().seat(seat.get()).dishes(dishes)
                 .user(user).
                 status(Order.Status.PENDING.name()).build();
@@ -88,7 +90,7 @@ public class StdApiController implements StdApi {
 
         Double amount = order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum);
 
-        PaymentRedirectResponse paymentRedirectResponse = payPalService.createOrder(amount, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), request);
+        PaymentRedirectResponse paymentRedirectResponse = payPalService.createOrder(amount, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), seat.get().getTables().getRestaurant().getName(), request);
 
         return ResponseEntity.ok(paymentRedirectResponse);
     }

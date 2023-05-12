@@ -44,7 +44,7 @@ public class PayPalService {
         client = new PayPalHttpClient(new PayPalEnvironment.Sandbox(clientId, clientSecret));
     }
 
-    public PaymentRedirectResponse createOrder(Double amount, Long userId, Long seatId, Long orderId, HttpServletRequest request) throws IOException {
+    public PaymentRedirectResponse createOrder(Double amount, Long userId, Long seatId, Long orderId, String restaurantName, HttpServletRequest request) throws IOException {
 
         URI returnUrl = buildReturnUrl(request, orderId);
 
@@ -58,6 +58,7 @@ public class PayPalService {
                 .seat(seatRepository.findById(seatId).orElse(null))
                 .user(userRepository.findById(userId).orElse(null))
                 .status("CREATED")
+                .restaurantName(restaurantName)
                 .total_amount(amount)
                 .orderId(orderId)
                 .timestamp(new Date())
