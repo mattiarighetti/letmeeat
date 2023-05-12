@@ -54,6 +54,9 @@ public class StdApiController implements StdApi {
     private MenuRepository menuRepository;
 
     @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
     private EmailService emailService;
 
     @Autowired
@@ -111,6 +114,13 @@ public class StdApiController implements StdApi {
     @Override
     public ResponseEntity<List<User>> getUser()  {
         return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<Payment>> getUserPayments(String userId)  {
+        User user = new User();
+        user.setUserId(Long.parseLong(userId));
+        return ResponseEntity.ok(paymentRepository.findPaymentsByUser(user));
     }
 
     @Override

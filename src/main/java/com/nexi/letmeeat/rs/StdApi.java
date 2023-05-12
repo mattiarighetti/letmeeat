@@ -42,6 +42,9 @@ public interface StdApi {
     @GetMapping(value = "/users", produces = {"application/json"})
     ResponseEntity<List<User>> getUser();
 
+    @GetMapping(value = "/users/{userId}/payments", produces = {"application/json"})
+    ResponseEntity<List<Payment>> getUserPayments(@PathVariable("userId") String userId);
+
     @GetMapping(value = "/payment/success", produces = {"application/json"})
     ResponseEntity<String> paymentSuccess(@RequestParam String orderId);
 
