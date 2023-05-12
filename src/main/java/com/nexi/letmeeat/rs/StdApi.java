@@ -1,6 +1,7 @@
 package com.nexi.letmeeat.rs;
 
 import com.nexi.letmeeat.model.*;
+import com.nexi.letmeeat.resoruces.BookingConfirmation;
 import com.nexi.letmeeat.resoruces.PostBookingRequest;
 import com.nexi.letmeeat.resoruces.OrderModel;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
