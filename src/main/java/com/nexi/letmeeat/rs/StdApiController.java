@@ -69,7 +69,7 @@ public class StdApiController implements StdApi {
     private XPayService xPayService;
 
     @Override
-    public ResponseEntity<PaymentRedirectResponse> postOrder(Integer type, OrderModel orderModel, HttpServletRequest request) throws IOException {
+    public ResponseEntity<PaymentRedirectResponse> postOrder(OrderModel orderModel, HttpServletRequest request) throws IOException {
 
         Optional<Seat> seat = seatRepository.findById(orderModel.getSeatId());
         List<Dish> dishes = dishRepository.findDishesByDishIdIn(orderModel.getDishIds());
@@ -86,7 +86,7 @@ public class StdApiController implements StdApi {
 
         Double amount = order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum);
         PaymentRedirectResponse paymentRedirectResponse;
-        if(type == 1) {
+        if(orderModel.getType() == 1) {
             paymentRedirectResponse = payPalService.createOrder(amount, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), order.getSeat().getTables().getRestaurant().getName(), request);
         }
         else {

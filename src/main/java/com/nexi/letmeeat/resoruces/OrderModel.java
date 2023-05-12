@@ -16,4 +16,7 @@ public class OrderModel {
 
     @JsonProperty
     private Long userId;
+
+    @JsonProperty
+    private Integer type;
 }
