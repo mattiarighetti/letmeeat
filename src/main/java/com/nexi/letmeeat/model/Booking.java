@@ -42,4 +42,7 @@ public class Booking {
     @Column
     private Date bookingDate;
 
+    @Column
+    private String restaurantName;
+
 }

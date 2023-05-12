@@ -179,7 +179,9 @@ public class StdApiController implements StdApi {
     public ResponseEntity<List<Booking>> getUserBookings(String userId)  {
         User user = new User();
         user.setUserId(Long.parseLong(userId));
-        return ResponseEntity.ok(bookingRepository.findBookingByUser(user));
+        List<Booking> bookings = bookingRepository.findBookingByUser(user);
+        bookings.forEach(booking -> booking.setRestaurantName(booking.getRestaurant().getName()));
+        return ResponseEntity.ok(bookings);
     }
 
     @Override
