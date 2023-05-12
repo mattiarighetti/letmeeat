@@ -17,6 +17,7 @@ public interface StdApi {
 
     @PostMapping(value = "/order", consumes = {"application/json"})
     ResponseEntity<PaymentRedirectResponse> postOrder(
+            @RequestParam(required = true) Integer type,
             @RequestBody OrderModel order,
             HttpServletRequest request) throws IOException
             ;
