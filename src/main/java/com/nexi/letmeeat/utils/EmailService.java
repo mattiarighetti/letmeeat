@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
@@ -47,11 +49,14 @@ public class EmailService {
     }
 
     public String buildReceipt(Order order) {
+
+        SimpleDateFormat simpleformat = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss");
         String content = loadHtml();
         content = content.replace("[ORDER_N]", order.getOrderId().toString());
         content = content.replace("[TOTAL]", Double.toString(
                 order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum)));
-
+        content = content.replace("[DATE]", simpleformat.format(new Date()));
+        content = content.replace("[RESTAURANT]", order.getSeat().getTables().getRestaurant().getName());
         StringBuilder bodyBuilder = new StringBuilder();
         String el = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td width=12 class=img style=font-size:0;line-height:0;text-align:left><td width=300 valign=top><div class=text style=color:#686868;font-family:Arial;font-size:14px;line-height:24px;text-align:left>[NAME]</div><table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td width=30 class=content-spacing style=font-size:0;line-height:0;text-align:left><td><div class=text2 style=color:#b0b0b0;font-family:Arial;font-size:14px;line-height:24px;text-align:left></div></table><td valign=top><div class=text-right style=color:#686868;font-family:Arial;font-size:14px;line-height:24px;text-align:right;white-space:nowrap>[PRICE]</div><div class=text-right2 style=color:#afafaf;font-family:Arial;font-size:14px;line-height:24px;text-align:right></div><td width=10 class=img style=font-size:0;line-height:0;text-align:left></table>";
         order.getDishes().forEach(d ->
