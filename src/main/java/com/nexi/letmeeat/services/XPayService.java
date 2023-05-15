@@ -1,6 +1,5 @@
 package com.nexi.letmeeat.services;
 
-import antlr.StringUtils;
 import com.nexi.letmeeat.db.OrderRepository;
 import com.nexi.letmeeat.db.PaymentRepository;
 import com.nexi.letmeeat.db.SeatRepository;
@@ -12,7 +11,6 @@ import com.nexi.letmeeat.resoruces.PayByLinkResponse;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
 import com.nexi.letmeeat.utils.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -35,7 +33,7 @@ public class XPayService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public PaymentRedirectResponse payByLink(PayByLinkRequest payByLinkRequest, Long userId, Long seatId, Long orderId, String restaurantName, Double amount){
+    public PaymentRedirectResponse payByLink(PayByLinkRequest payByLinkRequest, Long userId, Long seatId, Long orderId, String restaurantName, Double amount) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();

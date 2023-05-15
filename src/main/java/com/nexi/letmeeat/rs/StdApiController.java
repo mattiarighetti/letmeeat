@@ -208,7 +208,8 @@ public class StdApiController implements StdApi {
                 payment -> {
                     try {
                         payment.setReceipt(
-                                emailService.buildReceipt(orderRepository.findById(payment.getPaymentId()).get()));
+                                emailService.buildReceipt(orderRepository.findById(payment.getOrderId()).get())
+                        );
                     } catch (Exception e) {
                         log.error("Error during setting receipt", e);
                     }

@@ -50,6 +50,7 @@ public class EmailService {
 
     public String buildReceipt(Order order) {
 
+        log.debug("Starting receipt build");
         SimpleDateFormat simpleformat = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss");
         String content = loadHtml();
         content = content.replace("[ORDER_N]", order.getOrderId().toString());
