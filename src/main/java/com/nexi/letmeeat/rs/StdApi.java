@@ -55,4 +55,7 @@ public interface StdApi {
     @GetMapping(value = "/user/{userId}/payment", produces = {"application/json"})
     ResponseEntity<List<Payment>> payment(@PathVariable("userId") Long userId);
 
+    @GetMapping(value = "/payment/{paymentId}/receipt", produces = {"text/html"})
+    ResponseEntity<String> getReceipt(@PathVariable("paymentId") Long paymentId);
+
 }

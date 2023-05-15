@@ -206,25 +206,16 @@ public class StdApiController implements StdApi {
     public ResponseEntity<List<Payment>> payment(Long userId) {
 
         Optional<User> user = userRepository.findById(userId);
-        if (!user.isPresent())
+        return user.map(value -> ResponseEntity.ok(value.getPayments())).orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
+    @Override
+    public ResponseEntity<String> getReceipt(Long paymentId) {
+        Optional<Payment> payment = paymentRepository.findById(paymentId);
+        if (!payment.isPresent())
             return ResponseEntity.badRequest().build();
-
-        log.error("User {}", user);
-
-        user.get().getPayments().forEach(
-                payment -> {
-                    try {
-                        log.info("Order id {}", payment.getOrderId());
-                        Optional<Order> order = orderRepository.findById(payment.getOrderId());
-                        String receipt =  emailService.buildReceipt(order.get());
-                        payment.setReceipt(receipt);
-                    } catch (Exception e) {
-                        log.error("Error during setting receipt", e);
-                    }
-                }
-        );
-
-        return ResponseEntity.ok(user.get().getPayments());
+        Optional<Order> order = orderRepository.findById(payment.get().getOrderId());
+        return order.map(value -> ResponseEntity.ok(emailService.buildReceipt(value))).orElseGet(() -> ResponseEntity.internalServerError().build());
     }
 
 }
