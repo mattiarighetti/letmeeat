@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include
+            resource="org/springframework/boot/logging/logback/base.xml"/>
+    <include
+            resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property name="LOG_FILE" value="${LOG_FILE}"></property>
+    <springProperty scope="context" name="LOG_PATH"
+                    source="logging.path"></springProperty>
+    <springProperty scope="context" name="LOCALE"
+                    source="app.locale"></springProperty>
+
+    <!--APPENDER CONFIGURATION FOR CONSOLE LOGGING -->
+    <appender name="console"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d|%5p|%X{methodName}|%X{originApp}|%X{userId}|%X{clientId}|%X{sessionId}|${LOCALE}|%replace(%msg){'\b([0]*)(([245]){1}\d{5})(\d{2})(\d{4})(\d{4})\b','$1$2******$6'}%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC_LOG_CONSOLE"
+              class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>750</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="console"/>
+    </appender>
+
+    <!--START DEV CONFIGURATION -->
+    <springProfile name="dev">
+        <logger name="com.nexi" level="DEBUG" additivity="false">
+            <appender-ref ref="ASYNC_LOG_CONSOLE"/>
+        </logger>
+    </springProfile>
+    <!-- END DEV CONFIGURATION -->
+</configuration>
