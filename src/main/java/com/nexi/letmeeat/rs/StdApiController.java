@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -76,10 +78,12 @@ public class StdApiController implements StdApi {
 
         orderRepository.save(order);
 
-        Double amount = order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum);
+        double amount = order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum);
+        BigDecimal bd = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
+
         PaymentRedirectResponse paymentRedirectResponse;
         if (orderModel.getType() == 1) {
-            paymentRedirectResponse = payPalService.createOrder(amount, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), order.getSeat().getTables().getRestaurant().getName(), request);
+            paymentRedirectResponse = payPalService.createOrder(bd.doubleValue(), order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), order.getSeat().getTables().getRestaurant().getName(), request);
         } else {
             CustomerInfo customerInfo = CustomerInfo.builder()
                     .cardHolderName(order.getUser().getName())
