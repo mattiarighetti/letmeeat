@@ -135,6 +135,7 @@ public class StdApiController implements StdApi {
         bookingRepository.save(Booking.builder()
                 .table(tableRepository.findById(postBookingRequest.getTableId()).orElse(null))
                 .user(userRepository.findById(postBookingRequest.getUserId()).orElse(null))
+                .restaurant(restaurantRepository.findById(postBookingRequest.getRestaurantId()).orElse(null))
                 .build());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
         return ResponseEntity.ok(new BookingConfirmation(  simpleDateFormat.format(new Date())));
@@ -180,7 +181,8 @@ public class StdApiController implements StdApi {
         User user = new User();
         user.setUserId(Long.parseLong(userId));
         List<Booking> bookings = bookingRepository.findBookingByUser(user);
-        bookings.forEach(booking -> booking.setRestaurantName(booking.getRestaurant().getName()));
+        bookings.forEach(booking -> booking.setRestaurantName(
+                booking.getRestaurant().getName()));
         return ResponseEntity.ok(bookings);
     }
 
