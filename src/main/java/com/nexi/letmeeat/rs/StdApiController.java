@@ -13,23 +13,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Controller
 @Slf4j
@@ -86,10 +78,9 @@ public class StdApiController implements StdApi {
 
         Double amount = order.getDishes().stream().mapToDouble(Dish::getPrice).reduce(0, Double::sum);
         PaymentRedirectResponse paymentRedirectResponse;
-        if(orderModel.getType() == 1) {
+        if (orderModel.getType() == 1) {
             paymentRedirectResponse = payPalService.createOrder(amount, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), order.getSeat().getTables().getRestaurant().getName(), request);
-        }
-        else {
+        } else {
             CustomerInfo customerInfo = CustomerInfo.builder()
                     .cardHolderName(order.getUser().getName())
                     .cardHolderEmail(order.getUser().getEmail())
@@ -97,7 +88,7 @@ public class StdApiController implements StdApi {
                     .build();
             Recurrence recurrence = Recurrence.builder()
                     .action("NO_RECURRING")
-                    .contractId(UUID.randomUUID().toString().substring(1,15))
+                    .contractId(UUID.randomUUID().toString().substring(1, 15))
                     .contractType("MIT_UNSCHEDULED")
                     .build();
             PaymentSession paymentSession = PaymentSession.builder()
@@ -111,7 +102,7 @@ public class StdApiController implements StdApi {
                     .paymentService("CARDS")
                     .build();
             XPayOrder xPayOrder = XPayOrder.builder()
-                    .orderId(UUID.randomUUID().toString().substring(0,25))
+                    .orderId(UUID.randomUUID().toString().substring(0, 25))
                     .amount((long) (amount * 100))
                     .currency("EUR")
                     .customerId(order.getSeat().getTables().getRestaurant().getRestaurantId().toString())
@@ -132,13 +123,15 @@ public class StdApiController implements StdApi {
 
     @Override
     public ResponseEntity<BookingConfirmation> postBooking(PostBookingRequest postBookingRequest) {
-        bookingRepository.save(Booking.builder()
+
+        Booking booking = Booking.builder()
                 .table(tableRepository.findById(postBookingRequest.getTableId()).orElse(null))
                 .user(userRepository.findById(postBookingRequest.getUserId()).orElse(null))
                 .restaurant(restaurantRepository.findById(postBookingRequest.getRestaurantId()).orElse(null))
-                .build());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-        return ResponseEntity.ok(new BookingConfirmation(  simpleDateFormat.format(new Date())));
+                .bookingDate(new Date())
+                .build();
+        bookingRepository.save(booking);
+        return ResponseEntity.ok(new BookingConfirmation(booking.getBookingDate()));
     }
 
     @Override
@@ -158,7 +151,7 @@ public class StdApiController implements StdApi {
     }
 
     @Override
-    public ResponseEntity<List<Tables>> getRestaurantTables(String restaurantId)  {
+    public ResponseEntity<List<Tables>> getRestaurantTables(String restaurantId) {
         Restaurant restaurant = new Restaurant();
         restaurant.setRestaurantId(Long.parseLong(restaurantId));
         return ResponseEntity.ok(tableRepository.findTablesByRestaurant(restaurant));
@@ -170,14 +163,14 @@ public class StdApiController implements StdApi {
     }
 
     @Override
-    public ResponseEntity<List<Payment>> getUserPayments(String userId)  {
+    public ResponseEntity<List<Payment>> getUserPayments(String userId) {
         User user = new User();
         user.setUserId(Long.parseLong(userId));
         return ResponseEntity.ok(paymentRepository.findPaymentsByUser(user));
     }
 
     @Override
-    public ResponseEntity<List<Booking>> getUserBookings(String userId)  {
+    public ResponseEntity<List<Booking>> getUserBookings(String userId) {
         User user = new User();
         user.setUserId(Long.parseLong(userId));
         List<Booking> bookings = bookingRepository.findBookingByUser(user);
@@ -187,7 +180,7 @@ public class StdApiController implements StdApi {
     }
 
     @Override
-    public ResponseEntity<List<Order>> getOrder()  {
+    public ResponseEntity<List<Order>> getOrder() {
         return new ResponseEntity<>(orderRepository.findAll(), HttpStatus.OK);
     }
 
@@ -202,8 +195,7 @@ public class StdApiController implements StdApi {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Location", "https://letmeeat2.osc-fr1.scalingo.io/close");
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
-        }
-        else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @Override
@@ -213,9 +205,15 @@ public class StdApiController implements StdApi {
             return ResponseEntity.badRequest().build();
 
         user.get().getPayments().forEach(
-                payment -> payment.setReceipt(
-                        emailService.buildReceipt(orderRepository.findById(payment.getPaymentId()).get())
-                ));
+                payment -> {
+                    try {
+                        payment.setReceipt(
+                                emailService.buildReceipt(orderRepository.findById(payment.getPaymentId()).get()));
+                    } catch (Exception e) {
+                        log.error("Error during setting receipt", e);
+                    }
+                }
+        );
 
         return ResponseEntity.ok(user.get().getPayments());
     }
