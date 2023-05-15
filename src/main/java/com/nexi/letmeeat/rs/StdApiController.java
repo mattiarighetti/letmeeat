@@ -205,7 +205,7 @@ public class StdApiController implements StdApi {
         if (!user.isPresent())
             return ResponseEntity.badRequest().build();
 
-        log.info("User {}", user);
+        log.error("User {}", user);
 
         user.get().getPayments().forEach(
                 payment -> {
