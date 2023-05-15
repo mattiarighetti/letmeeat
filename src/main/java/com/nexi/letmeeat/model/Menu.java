@@ -2,6 +2,8 @@ package com.nexi.letmeeat.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -10,7 +12,8 @@ import java.util.List;
 @Entity
 @Table(name = "menus")
 @DynamicUpdate
-@Data
+@Getter
+@Setter
 public class Menu {
 
     @Id
