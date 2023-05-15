@@ -200,9 +200,12 @@ public class StdApiController implements StdApi {
 
     @Override
     public ResponseEntity<List<Payment>> payment(Long userId) {
+
         Optional<User> user = userRepository.findById(userId);
         if (!user.isPresent())
             return ResponseEntity.badRequest().build();
+
+        log.info("User {}", user);
 
         user.get().getPayments().forEach(
                 payment -> {
