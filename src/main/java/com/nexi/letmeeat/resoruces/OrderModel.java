@@ -12,7 +12,7 @@ public class OrderModel {
     private List<Long> dishIds;
 
     @JsonProperty
-    private Long seatId;
+    private Long restaurantId;
 
     @JsonProperty
     private Long userId;

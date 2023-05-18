@@ -2,7 +2,6 @@ package com.nexi.letmeeat.services;
 
 import com.nexi.letmeeat.db.OrderRepository;
 import com.nexi.letmeeat.db.PaymentRepository;
-import com.nexi.letmeeat.db.SeatRepository;
 import com.nexi.letmeeat.db.UserRepository;
 import com.nexi.letmeeat.model.Order;
 import com.nexi.letmeeat.model.Payment;
@@ -27,13 +26,11 @@ public class XPayService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private SeatRepository seatRepository;
-    @Autowired
     private EmailService emailService;
     @Autowired
     private OrderRepository orderRepository;
 
-    public PaymentRedirectResponse payByLink(PayByLinkRequest payByLinkRequest, Long userId, Long seatId, Long orderId, String restaurantName, Double amount) {
+    public PaymentRedirectResponse payByLink(PayByLinkRequest payByLinkRequest, Long userId, Long orderId, String restaurantName, Double amount) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -50,7 +47,6 @@ public class XPayService {
                 PayByLinkResponse.class);
 
         paymentRepository.save(Payment.builder()
-                .seat(seatRepository.findById(seatId).orElse(null))
                 .user(userRepository.findById(userId).orElse(null))
                 .status("CREATED")
                 .restaurantName(restaurantName)

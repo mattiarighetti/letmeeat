@@ -1,12 +1,9 @@
 package com.nexi.letmeeat.services;
 
-import com.nexi.letmeeat.db.OrderRepository;
 import com.nexi.letmeeat.db.PaymentRepository;
-import com.nexi.letmeeat.db.SeatRepository;
 import com.nexi.letmeeat.db.UserRepository;
 import com.nexi.letmeeat.model.Payment;
 import com.nexi.letmeeat.resoruces.PaymentRedirectResponse;
-import com.nexi.letmeeat.utils.EmailService;
 import com.paypal.core.PayPalEnvironment;
 import com.paypal.core.PayPalHttpClient;
 import com.paypal.http.HttpResponse;
@@ -29,13 +26,7 @@ public class PayPalService {
     @Autowired
     private PaymentRepository paymentRepository;
     @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private SeatRepository seatRepository;
-    @Autowired
-    private EmailService emailService;
 
     private PayPalHttpClient client;
 
@@ -44,7 +35,7 @@ public class PayPalService {
         client = new PayPalHttpClient(new PayPalEnvironment.Sandbox(clientId, clientSecret));
     }
 
-    public PaymentRedirectResponse createOrder(Double amount, Long userId, Long seatId, Long orderId, String restaurantName, HttpServletRequest request) throws IOException {
+    public PaymentRedirectResponse createOrder(Double amount, Long userId, Long orderId, String restaurantName, HttpServletRequest request) throws IOException {
 
         URI returnUrl = buildReturnUrl(request, orderId);
 
@@ -55,7 +46,6 @@ public class PayPalService {
         LinkDescription approveUri = extractApprovalLink(order);
 
         paymentRepository.save(Payment.builder()
-                .seat(seatRepository.findById(seatId).orElse(null))
                 .user(userRepository.findById(userId).orElse(null))
                 .status("CREATED")
                 .restaurantName(restaurantName)

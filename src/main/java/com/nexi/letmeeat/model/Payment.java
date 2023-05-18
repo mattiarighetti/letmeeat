@@ -31,9 +31,9 @@ public class Payment {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "SEAT_ID")
+    @JoinColumn(name = "RESTAURANT_ID")
     @JsonIgnore
-    private Seat seat;
+    private Restaurant restaurant;
 
     @Column(name = "TOTAL_AMOUNT")
     private Double total_amount;

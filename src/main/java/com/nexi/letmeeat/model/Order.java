@@ -27,8 +27,8 @@ public class Order {
     private Long orderId;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "seat_id", referencedColumnName = "seat_id")
-    private Seat seat;
+    @JoinColumn(name = "restaurant_id", referencedColumnName = "restaurant_id")
+    private Restaurant restaurant;
 
     @ManyToMany
     private List<Dish> dishes;

@@ -39,9 +39,6 @@ public class StdApiController implements StdApi {
     private UserRepository userRepository;
 
     @Autowired
-    private SeatRepository seatRepository;
-
-    @Autowired
     private DishRepository dishRepository;
 
     @Autowired
@@ -65,14 +62,15 @@ public class StdApiController implements StdApi {
     @Override
     public ResponseEntity<PaymentRedirectResponse> postOrder(OrderModel orderModel, HttpServletRequest request) throws IOException {
 
-        Optional<Seat> seat = seatRepository.findById(orderModel.getSeatId());
+        Optional<Restaurant> restaurant = restaurantRepository.findById(orderModel.getRestaurantId());
         List<Dish> dishes = dishRepository.findDishesByDishIdIn(orderModel.getDishIds());
         User user = userRepository.findById(orderModel.getUserId()).orElse(null);
 
-        if (!seat.isPresent() || dishes.isEmpty())
+
+        if (!restaurant.isPresent() || dishes.isEmpty())
             return ResponseEntity.badRequest().build();
 
-        Order order = Order.builder().seat(seat.get()).dishes(dishes)
+        Order order = Order.builder().restaurant(restaurant.get()).dishes(dishes)
                 .user(user).
                 status(Order.Status.PENDING.name()).build();
 
@@ -83,7 +81,7 @@ public class StdApiController implements StdApi {
 
         PaymentRedirectResponse paymentRedirectResponse;
         if (orderModel.getType() == 1) {
-            paymentRedirectResponse = payPalService.createOrder(bd.doubleValue(), order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), order.getSeat().getTables().getRestaurant().getName(), request);
+            paymentRedirectResponse = payPalService.createOrder(bd.doubleValue(), order.getUser().getUserId(), order.getOrderId(), restaurant.get().getName(), request);
         } else {
             CustomerInfo customerInfo = CustomerInfo.builder()
                     .cardHolderName(order.getUser().getName())
@@ -109,8 +107,8 @@ public class StdApiController implements StdApi {
                     .orderId(UUID.randomUUID().toString().substring(0, 25))
                     .amount((long) (amount * 100))
                     .currency("EUR")
-                    .customerId(order.getSeat().getTables().getRestaurant().getRestaurantId().toString())
-                    .description(order.getSeat().getTables().getRestaurant().getRestaurantId().toString())
+                    .customerId(order.getRestaurant().getRestaurantId().toString())
+                    .description(order.getRestaurant().getRestaurantId().toString())
                     .customField("")
                     .customerInfo(customerInfo)
                     .build();
@@ -120,7 +118,7 @@ public class StdApiController implements StdApi {
                     .expirationDate("2023-05-31")
                     .build();
 
-            paymentRedirectResponse = xPayService.payByLink(payByLinkRequest, order.getUser().getUserId(), orderModel.getSeatId(), order.getOrderId(), order.getSeat().getTables().getRestaurant().getName(), amount);
+            paymentRedirectResponse = xPayService.payByLink(payByLinkRequest, order.getUser().getUserId(), order.getOrderId(), order.getRestaurant().getName(), bd.doubleValue());
         }
         return ResponseEntity.ok(paymentRedirectResponse);
     }
