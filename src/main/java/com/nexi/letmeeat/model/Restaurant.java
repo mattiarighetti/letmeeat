@@ -1,5 +1,6 @@
 package com.nexi.letmeeat.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
@@ -28,13 +29,12 @@ public class Restaurant {
     @JsonProperty
     private String category;
 
-
     @Column
     @JsonProperty
     private String imageUrl;
 
     @OneToMany(mappedBy="restaurant")
-    @JsonProperty
+    @JsonIgnore
     private List<Booking> bookings;
 
 }
